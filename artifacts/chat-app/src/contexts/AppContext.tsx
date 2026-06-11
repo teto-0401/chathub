@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from "react";
+import { client } from "@/services/appwrite/client";
 import { ensureAnonymousSession } from "@/services/appwrite/auth";
 import { findUserById, updatePresence } from "@/services/appwrite/database";
 import { getOrCreateUserId } from "@/lib/userId";
@@ -38,6 +39,8 @@ export function AppProvider({ children }: { children: ReactNode }) {
     // Auth & Init
     const init = async () => {
       try {
+        // Ping the Appwrite backend to verify the setup
+        client.ping();
         await ensureAnonymousSession();
         const storedId = getOrCreateUserId();
         const userDoc = await findUserById(storedId);
