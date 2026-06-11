@@ -13,7 +13,7 @@ export const storage = new Storage(client);
 export const realtime = new Realtime(client);
 export { client };
 
-export const DATABASE_ID = "chat-db";
+export const DATABASE_ID = "6a2a372b0016b73b5f21";
 export const STORAGE_BUCKET_ID = "chat-files";
 
 export const COLLECTIONS = {
