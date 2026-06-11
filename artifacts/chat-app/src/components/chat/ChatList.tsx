@@ -25,7 +25,7 @@ export function ChatList({ chats, isLoading }: ChatListProps) {
   if (chats.length === 0) {
     return (
       <div className="p-4 text-center text-sm text-sidebar-foreground/50">
-        No chats yet. Start a conversation!
+        チャットはまだありません。トークを始めよう！
       </div>
     );
   }

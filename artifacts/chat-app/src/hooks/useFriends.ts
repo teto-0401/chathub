@@ -18,7 +18,7 @@ export function useFriends() {
         const data = await getFriends(currentUser.userId);
         setFriends(data);
       } catch (err) {
-        console.error("Failed to fetch friends", err);
+        console.error("友達一覧取得に失敗", err);
       } finally {
         setLoading(false);
       }

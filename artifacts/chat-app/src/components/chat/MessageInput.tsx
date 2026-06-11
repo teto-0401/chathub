@@ -26,7 +26,7 @@ export function MessageInput({ chatId }: { chatId: string }) {
       );
       setContent("");
     } catch (err) {
-      toast({ title: "Failed to send", variant: "destructive" });
+      toast({ title: "送信に失敗しました", variant: "destructive" });
     } finally {
       setIsSending(false);
     }
@@ -57,7 +57,7 @@ export function MessageInput({ chatId }: { chatId: string }) {
         file.name
       );
     } catch (err) {
-      toast({ title: "Failed to upload file", variant: "destructive" });
+      toast({ title: "ファイルアップロードに失敗しました", variant: "destructive" });
     } finally {
       setIsSending(false);
       if (e.target) e.target.value = "";
@@ -105,7 +105,7 @@ export function MessageInput({ chatId }: { chatId: string }) {
         value={content}
         onChange={(e) => setContent(e.target.value)}
         onKeyDown={handleKeyDown}
-        placeholder="Type a message..."
+        placeholder="メッセージを入力..."   
         className="flex-1 bg-transparent border-0 resize-none outline-none py-2 text-sm text-foreground placeholder:text-muted-foreground min-h-[40px] max-h-[120px]"
         rows={1}
         disabled={isSending}

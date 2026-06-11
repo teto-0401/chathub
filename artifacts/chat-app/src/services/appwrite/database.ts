@@ -72,7 +72,7 @@ export async function sendMessage(chatId: string, senderId: string, senderName: 
   });
 
   await databases.updateDocument(DATABASE_ID, COLLECTIONS.CHATS, chatId, {
-    lastMessage: type === 'text' ? content : (type === 'image' ? 'Image sent' : 'File sent'),
+    lastMessage: type === 'text' ? content : (type === 'image' ? '画像を送信' : 'ファイルを送信'),
     lastMessageAt: now
   });
 

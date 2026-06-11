@@ -29,8 +29,8 @@ export default function SetupPage() {
     e.preventDefault();
     if (nickname.trim().length < 2) {
       toast({
-        title: "Invalid nickname",
-        description: "Nickname must be at least 2 characters.",
+        title: "ニックネームが短い",
+        description: "ニックネームは2文字以上必要です。",
         variant: "destructive"
       });
       return;
@@ -49,8 +49,8 @@ export default function SetupPage() {
     } catch (error) {
       console.error(error);
       toast({
-        title: "Setup failed",
-        description: "Failed to connect to Appwrite or save your profile. Ensure environment variables and DB collections are configured.",
+        title: "設定に失敗しました",
+        description: "Appwriteとの接続またはプロフィール保存に失敗しました。環境変数やDBコレクションの設定を確認してください。",
         variant: "destructive"
       });
     } finally {
@@ -65,15 +65,15 @@ export default function SetupPage() {
           <div className="mx-auto w-12 h-12 bg-primary rounded-xl flex items-center justify-center mb-2">
             <span className="text-primary-foreground font-bold text-xl">C</span>
           </div>
-          <CardTitle className="text-2xl font-bold tracking-tight text-foreground">Welcome to ChatHub</CardTitle>
+          <CardTitle className="text-2xl font-bold tracking-tight text-foreground">ChatHubへようこそ</CardTitle>
           <CardDescription className="text-muted-foreground">
-            No registration required. Set a nickname to jump right in.
+            ユーザー登録不要。ニックネームを設定してすぐに始めよう。
           </CardDescription>
         </CardHeader>
         <form onSubmit={handleSubmit}>
           <CardContent className="space-y-6">
             <div className="space-y-2">
-              <Label className="text-xs uppercase tracking-wider font-semibold text-muted-foreground">Your Anonymous ID</Label>
+              <Label className="text-xs uppercase tracking-wider font-semibold text-muted-foreground">あなたのID</Label>
               <div className="flex gap-2">
                 <Input 
                   value={userId} 
@@ -93,10 +93,10 @@ export default function SetupPage() {
             </div>
             
             <div className="space-y-2">
-              <Label htmlFor="nickname" className="text-xs uppercase tracking-wider font-semibold text-muted-foreground">Nickname</Label>
+              <Label htmlFor="nickname" className="text-xs uppercase tracking-wider font-semibold text-muted-foreground">ニックネーム</Label>
               <Input 
                 id="nickname" 
-                placeholder="e.g. Maverick" 
+                placeholder="例：タロウ" 
                 value={nickname}
                 onChange={(e) => setNickname(e.target.value)}
                 maxLength={32}
@@ -106,18 +106,18 @@ export default function SetupPage() {
             </div>
 
             <div className="bg-secondary/30 p-4 rounded-lg border border-border/50 text-xs text-muted-foreground space-y-3">
-              <p className="font-semibold text-foreground">Appwrite Setup Required</p>
+              <p className="font-semibold text-foreground">Appwrite設定が必要です</p>
               <div>
-                <p className="font-medium text-foreground/80 mb-1">1. Add Web Platform</p>
-                <p>In Appwrite Console → Project Settings → Platforms → Add Platform → Web. Set hostname to <span className="font-mono bg-background/50 px-1 rounded">*</span> (wildcard) or your domain.</p>
+                <p className="font-medium text-foreground/80 mb-1">1. Webプラットフォームを追加</p>
+                <p>Appwrite Console → Project Settings → Platforms → Add Platform → Web 。ホスト名を <span className="font-mono bg-background/50 px-1 rounded">*</span> (ワイルドカード) またはドメインで設定。</p>
               </div>
               <div>
-                <p className="font-medium text-foreground/80 mb-1">2. Create Database</p>
-                <p>Create a database with ID: <span className="font-mono bg-background/50 px-1 rounded">chat-db</span></p>
+                <p className="font-medium text-foreground/80 mb-1">2. データベースを作成</p>
+                <p>ID: <span className="font-mono bg-background/50 px-1 rounded">chat-db</span> のデータベースを作成。</p>
               </div>
               <div>
-                <p className="font-medium text-foreground/80 mb-1">3. Create Collections (in chat-db)</p>
-                <p className="mb-1">Create these collections with <strong>Any</strong> read/write permissions:</p>
+                <p className="font-medium text-foreground/80 mb-1">3. コレクションを作成（chat-db内）</p>
+                <p className="mb-1">以下のコレクションを、<strong>誰でも読み書き可能（Any）</strong>で作成。</p>
                 <ul className="list-disc list-inside ml-2 space-y-0.5 opacity-80">
                   <li><span className="font-mono">users</span> — userId, nickname, avatarUrl, isOnline, lastSeenAt, createdAt</li>
                   <li><span className="font-mono">friends</span> — userId, friendId, status, createdAt</li>
@@ -127,8 +127,8 @@ export default function SetupPage() {
                 </ul>
               </div>
               <div>
-                <p className="font-medium text-foreground/80 mb-1">4. Create Storage Bucket</p>
-                <p>Create a bucket with ID: <span className="font-mono bg-background/50 px-1 rounded">chat-files</span> with Any read/write permissions.</p>
+                <p className="font-medium text-foreground/80 mb-1">4. ストレージバケットを作成</p>
+                <p>ID: <span className="font-mono bg-background/50 px-1 rounded">chat-files</span> 、権限は誰でも読み書き可能で作成。</p>
               </div>
             </div>
           </CardContent>
@@ -138,7 +138,7 @@ export default function SetupPage() {
               className="w-full font-semibold" 
               disabled={loading || nickname.trim().length < 2}
             >
-              {loading ? "Joining..." : "Start Chatting"}
+              {loading ? "参加中..." : "チャットを始める"}
             </Button>
           </CardFooter>
         </form>

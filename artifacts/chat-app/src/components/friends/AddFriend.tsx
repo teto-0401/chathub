@@ -20,18 +20,18 @@ export function AddFriend() {
     if (!currentUser || !friendId.trim()) return;
     
     if (friendId.trim() === currentUser.userId) {
-      toast({ title: "Cannot add yourself", variant: "destructive" });
+      toast({ title: "自分自身を追加することはできません", variant: "destructive" });
       return;
     }
 
     setLoading(true);
     try {
       await sendFriendRequest(currentUser.userId, friendId.trim());
-      toast({ title: "Friend request sent!" });
+      toast({ title: "友達申請を送信しました！" });
       setOpen(false);
       setFriendId("");
     } catch (err: any) {
-      toast({ title: "Failed to send request", description: err.message, variant: "destructive" });
+      toast({ title: "申請の送信に失敗しました", description: err.message, variant: "destructive" });
     } finally {
       setLoading(false);
     }
@@ -47,28 +47,28 @@ export function AddFriend() {
       <DialogContent className="sm:max-w-[425px]">
         <form onSubmit={handleAdd}>
           <DialogHeader>
-            <DialogTitle>Add Friend</DialogTitle>
+            <DialogTitle>友達を追加</DialogTitle>
             <DialogDescription>
-              Enter your friend's user ID to send them a request.
+              友達のユーザーIDを入力して、友達申請を送信します。
             </DialogDescription>
           </DialogHeader>
           <div className="grid gap-4 py-4">
             <div className="grid grid-cols-4 items-center gap-4">
               <Label htmlFor="friendId" className="text-right">
-                User ID
+                ユーザーID
               </Label>
               <Input
                 id="friendId"
                 value={friendId}
                 onChange={(e) => setFriendId(e.target.value)}
-                placeholder="ABCD-EFGH-IJKL"
+                placeholder="XXXX-XXXX-XXXX"
                 className="col-span-3 font-mono"
               />
             </div>
           </div>
           <DialogFooter>
             <Button type="submit" disabled={loading || !friendId.trim()}>
-              {loading ? "Sending..." : "Send Request"}
+              {loading ? "送信中..." : "申請を送信"}
             </Button>
           </DialogFooter>
         </form>

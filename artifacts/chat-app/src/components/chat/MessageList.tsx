@@ -24,7 +24,7 @@ export function MessageList({ chatId }: { chatId: string }) {
   if (messages.length === 0) {
     return (
       <div className="absolute inset-0 flex items-center justify-center text-muted-foreground text-sm">
-        This is the beginning of the conversation.
+        トークの始まりです。
       </div>
     );
   }

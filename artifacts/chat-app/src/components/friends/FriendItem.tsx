@@ -22,7 +22,7 @@ export function FriendItem({ friend }: { friend: any }) {
       const chat = await getOrCreateDirectChat(currentUser.userId, targetUserId);
       setActiveChatId(chat.$id);
     } catch (err) {
-      toast({ title: "Failed to open chat", variant: "destructive" });
+      toast({ title: "チャットの開設に失敗しました", variant: "destructive" });
     }
   };
 
@@ -36,7 +36,7 @@ export function FriendItem({ friend }: { friend: any }) {
       
       <div className="flex-1 min-w-0 flex flex-col justify-center">
         <span className="text-sm font-medium text-sidebar-foreground truncate">{displayName}</span>
-        <span className="text-[10px] text-sidebar-foreground/50 capitalize">{friend.status}</span>
+        <span className="text-[10px] text-sidebar-foreground/50 capitalize">{friend.status === "accepted" ? "承認済み" : friend.status === "pending" ? "申請中" : friend.status}</span>
       </div>
 
       {friend.status === "accepted" && (

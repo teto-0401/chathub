@@ -21,13 +21,13 @@ export function FriendList() {
   return (
     <div className="flex flex-col h-full">
       <div className="p-4 border-b border-sidebar-border flex justify-between items-center shrink-0">
-        <span className="text-sm font-medium text-sidebar-foreground">Friends</span>
+        <span className="text-sm font-medium text-sidebar-foreground">友達</span>
         <AddFriend />
       </div>
       <div className="flex-1 overflow-y-auto p-2 space-y-0.5">
         {friends.length === 0 ? (
           <div className="p-4 text-center text-sm text-sidebar-foreground/50">
-            No friends yet. Add some!
+            友達はまだいません。追加しよう！
           </div>
         ) : (
           friends.map(friend => (

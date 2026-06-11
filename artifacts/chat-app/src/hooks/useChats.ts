@@ -18,7 +18,7 @@ export function useChats() {
         const data = await getChats(currentUser.userId);
         setChats(data);
       } catch (err) {
-        console.error("Failed to fetch chats", err);
+        console.error("チャット取得に失敗", err);
       } finally {
         setLoading(false);
       }

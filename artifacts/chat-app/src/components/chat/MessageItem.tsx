@@ -39,7 +39,7 @@ export function MessageItem({ message, isConsecutive }: { message: any, isConsec
             {message.type === "image" && message.fileId ? (
               <img 
                 src={getFilePreviewUrl(message.fileId)} 
-                alt="attachment" 
+                alt="添付ファイル" 
                 className="max-w-[200px] rounded-md mb-2"
               />
             ) : message.type === "file" && message.fileName ? (

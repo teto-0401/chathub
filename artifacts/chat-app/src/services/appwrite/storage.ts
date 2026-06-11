@@ -1,4 +1,4 @@
-import { storage, STORAGE_BUCKET_ID } from "./client";
+import { storage, STORAGE_BUCKET_ID, ENDPOINT, PROJECT_ID } from "./client";
 import { ID } from "appwrite";
 
 export async function uploadFile(file: File): Promise<string> {
@@ -7,9 +7,9 @@ export async function uploadFile(file: File): Promise<string> {
 }
 
 export function getFilePreviewUrl(fileId: string): string {
-  return `${import.meta.env.VITE_APPWRITE_ENDPOINT}/storage/buckets/${STORAGE_BUCKET_ID}/files/${fileId}/preview?project=${import.meta.env.VITE_APPWRITE_PROJECT_ID}`;
+  return `${ENDPOINT}/storage/buckets/${STORAGE_BUCKET_ID}/files/${fileId}/preview?project=${PROJECT_ID}`;
 }
 
 export function getFileDownloadUrl(fileId: string): string {
-  return `${import.meta.env.VITE_APPWRITE_ENDPOINT}/storage/buckets/${STORAGE_BUCKET_ID}/files/${fileId}/download?project=${import.meta.env.VITE_APPWRITE_PROJECT_ID}`;
+  return `${ENDPOINT}/storage/buckets/${STORAGE_BUCKET_ID}/files/${fileId}/download?project=${PROJECT_ID}`;
 }

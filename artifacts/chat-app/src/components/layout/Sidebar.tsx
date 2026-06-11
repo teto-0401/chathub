@@ -30,11 +30,11 @@ export function Sidebar() {
           <TabsList className="w-full grid grid-cols-2 bg-sidebar-accent">
             <TabsTrigger value="chats" className="data-[state=active]:bg-sidebar text-xs py-1.5">
               <MessageSquare className="w-4 h-4 mr-2" />
-              Chats
+              チャット
             </TabsTrigger>
             <TabsTrigger value="friends" className="data-[state=active]:bg-sidebar text-xs py-1.5">
               <Users className="w-4 h-4 mr-2" />
-              Friends
+              友達
             </TabsTrigger>
           </TabsList>
         </Tabs>

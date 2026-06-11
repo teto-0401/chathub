@@ -17,7 +17,7 @@ export function useMessages(chatId: string | null) {
         const data = await getMessages(chatId);
         setMessages(data);
       } catch (err) {
-        console.error("Failed to fetch messages", err);
+        console.error("メッセージ取得に失敗", err);
       } finally {
         setLoading(false);
       }

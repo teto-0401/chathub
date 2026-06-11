@@ -12,7 +12,7 @@ export function ChatArea() {
           <div className="w-16 h-16 rounded-full bg-secondary flex items-center justify-center mb-4">
             <div className="w-8 h-8 rounded-full bg-primary/20" />
           </div>
-          <p>Select a chat or friend to start messaging</p>
+          <p>チャットや友達を選択してメッセージを始めよう</p>
         </div>
       </div>
     );
@@ -21,7 +21,7 @@ export function ChatArea() {
   return (
     <>
       <div className="h-14 border-b border-border bg-card/50 backdrop-blur flex items-center px-6 sticky top-0 z-10 shrink-0">
-        <h2 className="font-semibold text-foreground">Chat</h2>
+        <h2 className="font-semibold text-foreground">チャット</h2>
       </div>
       
       <div className="flex-1 overflow-hidden relative">

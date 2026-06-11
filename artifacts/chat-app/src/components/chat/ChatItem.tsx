@@ -7,13 +7,11 @@ export function ChatItem({ chat }: { chat: any }) {
   const isActive = activeChatId === chat.$id;
 
   // Derive chat name/avatar for DMs vs Groups
-  let chatName = chat.name || "Chat";
+  let chatName = chat.name || "チャット";
   let fallback = chatName.substring(0, 2).toUpperCase();
   
   if (chat.type === "direct") {
-    // For DMs, we should ideally fetch the friend's user doc
-    // But for a quick UI we'll just show "Direct Message" or a placeholder
-    chatName = "Direct Message";
+    chatName = "ダイレクトメッセージ";
     fallback = "DM";
   }
 
@@ -42,7 +40,7 @@ export function ChatItem({ chat }: { chat: any }) {
         </div>
         <div className="flex justify-between items-center">
           <span className="text-xs text-sidebar-foreground/70 truncate">
-            {chat.lastMessage || "No messages yet"}
+            {chat.lastMessage || "メッセージはまだありません"}
           </span>
           {/* Example unread badge */}
           {/* <div className="w-2 h-2 rounded-full bg-primary shrink-0 ml-2" /> */}
