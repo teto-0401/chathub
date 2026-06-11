@@ -48,7 +48,7 @@ export async function findUserById(userId: string) {
 // チャット一覧取得（自分が所属するもの）
 export async function getChats(userId: string) {
   const response = await databases.listDocuments(DATABASE_ID, COLLECTIONS.CHATS, [
-    Query.search("memberIds", userId),
+    Query.contains("memberIds", userId),
     Query.orderDesc("lastMessageAt")
   ]);
   return response.documents;
@@ -120,7 +120,7 @@ export async function getFriends(userId: string) {
 export async function getOrCreateDirectChat(userId: string, friendId: string) {
   const existingChats = await databases.listDocuments(DATABASE_ID, COLLECTIONS.CHATS, [
     Query.equal("type", "direct"),
-    Query.search("memberIds", userId)
+    Query.contains("memberIds", userId)
   ]);
 
   const existing = existingChats.documents.find(chat => chat.memberIds.includes(friendId));

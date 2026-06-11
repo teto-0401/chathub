@@ -34,5 +34,5 @@ externalPort = 3000
 [userenv]
 
 [userenv.shared]
-VITE_APPWRITE_ENDPOINT = "https://cloud.appwrite.io/v1"
+VITE_APPWRITE_ENDPOINT = "https://sgp.cloud.appwrite.io/v1"
 VITE_APPWRITE_PROJECT_ID = "6a2a14fd0026dd2c2de2"
