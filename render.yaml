@@ -20,3 +20,7 @@ services:
         value: 6a2a372b0016b73b5f21
       - key: NODE_ENV
         value: production
+      - key: BASE_PATH
+        value: /
+      - key: PORT
+        value: "3000"
