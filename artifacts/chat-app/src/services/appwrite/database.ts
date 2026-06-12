@@ -50,12 +50,7 @@ export async function getChats(userId: string) {
   const response = await databases.listDocuments(DATABASE_ID, COLLECTIONS.CHATS, [
     Query.contains("memberIds", userId)
   ]);
-  // フロントエンドでソート（lastMessageAtが存在しない場合のフォールバック）
-  return response.documents.sort((a, b) => {
-    const aTime = a.lastMessageAt || a.createdAt || a.$createdAt;
-    const bTime = b.lastMessageAt || b.createdAt || b.$createdAt;
-    return new Date(bTime).getTime() - new Date(aTime).getTime();
-  });
+  return response.documents.reverse();
 }
 
 // メッセージ送信
@@ -73,11 +68,6 @@ export async function sendMessage(chatId: string, senderId: string, senderName: 
     isPinned: false,
     readBy: [senderId],
     createdAt: now
-  });
-
-  await databases.updateDocument(DATABASE_ID, COLLECTIONS.CHATS, chatId, {
-    lastMessage: type === 'text' ? content : (type === 'image' ? '画像を送信' : 'ファイルを送信'),
-    lastMessageAt: now
   });
 
   return message;
@@ -135,7 +125,6 @@ export async function getFriends(userId: string) {
 // DMチャット作成 or 既存のDM取得
 export async function getOrCreateDirectChat(userId: string, friendId: string) {
   const existingChats = await databases.listDocuments(DATABASE_ID, COLLECTIONS.CHATS, [
-    Query.equal("type", "direct"),
     Query.contains("memberIds", userId)
   ]);
 
@@ -147,8 +136,7 @@ export async function getOrCreateDirectChat(userId: string, friendId: string) {
     type: "direct",
     memberIds: [userId, friendId],
     createdBy: userId,
-    createdAt: now,
-    lastMessageAt: now
+    createdAt: now
   });
 }
 
@@ -160,8 +148,7 @@ export async function createGroupChat(name: string, memberIds: string[], created
     name,
     memberIds: [...memberIds, createdBy],
     createdBy,
-    createdAt: now,
-    lastMessageAt: now
+    createdAt: now
   });
 }
 

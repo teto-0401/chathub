@@ -15,8 +15,8 @@ export function ChatItem({ chat }: { chat: any }) {
     fallback = "DM";
   }
 
-  const timeStr = chat.lastMessageAt 
-    ? formatDistanceToNow(new Date(chat.lastMessageAt), { addSuffix: true })
+  const timeStr = chat.createdAt 
+    ? formatDistanceToNow(new Date(chat.createdAt), { addSuffix: true })
     : "";
 
   return (
@@ -40,10 +40,8 @@ export function ChatItem({ chat }: { chat: any }) {
         </div>
         <div className="flex justify-between items-center">
           <span className="text-xs text-sidebar-foreground/70 truncate">
-            {chat.lastMessage || "メッセージはまだありません"}
+            {"メッセージはまだありません"}
           </span>
-          {/* Example unread badge */}
-          {/* <div className="w-2 h-2 rounded-full bg-primary shrink-0 ml-2" /> */}
         </div>
       </div>
     </button>
