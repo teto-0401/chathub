@@ -38,4 +38,4 @@ VITE_APPWRITE_ENDPOINT = "https://sgp.cloud.appwrite.io/v1"
 VITE_APPWRITE_PROJECT_ID = "6a2a14fd0026dd2c2de2"
 
 [nix]
-packages = ["unzip"]
+packages = ["unzip", "nano"]
