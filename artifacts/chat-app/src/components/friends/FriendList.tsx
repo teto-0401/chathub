@@ -3,7 +3,16 @@ import { FriendItem } from "./FriendItem";
 import { AddFriend } from "./AddFriend";
 
 export function FriendList() {
-  const { friends, loading } = useFriends();
+  const { friends, loading, setFriends } = useFriends();
+
+  const refreshFriends = async () => {
+    const { currentUser } = await import("@/contexts/AppContext").then(m => m.useAppContext());
+    if (currentUser?.userId) {
+      const { getFriends } = await import("@/services/appwrite");
+      const data = await getFriends(currentUser.userId);
+      setFriends(data);
+    }
+  };
 
   if (loading) {
     return (
@@ -31,7 +40,7 @@ export function FriendList() {
           </div>
         ) : (
           friends.map(friend => (
-            <FriendItem key={friend.$id} friend={friend} />
+            <FriendItem key={friend.$id} friend={friend} onUpdate={refreshFriends} />
           ))
         )}
       </div>

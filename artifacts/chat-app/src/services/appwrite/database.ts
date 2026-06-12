@@ -107,6 +107,18 @@ export async function sendFriendRequest(fromUserId: string, toUserId: string) {
   });
 }
 
+// 友達申請を承認
+export async function acceptFriendRequest(friendDocId: string) {
+  return await databases.updateDocument(DATABASE_ID, COLLECTIONS.FRIENDS, friendDocId, {
+    status: "accepted"
+  });
+}
+
+// 友達申請を拒否
+export async function rejectFriendRequest(friendDocId: string) {
+  return await databases.deleteDocument(DATABASE_ID, COLLECTIONS.FRIENDS, friendDocId);
+}
+
 // 友達一覧取得
 export async function getFriends(userId: string) {
   const [sent, received] = await Promise.all([
