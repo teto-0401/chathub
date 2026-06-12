@@ -48,10 +48,14 @@ export async function findUserById(userId: string) {
 // チャット一覧取得（自分が所属するもの）
 export async function getChats(userId: string) {
   const response = await databases.listDocuments(DATABASE_ID, COLLECTIONS.CHATS, [
-    Query.contains("memberIds", userId),
-    Query.orderDesc("lastMessageAt")
+    Query.contains("memberIds", userId)
   ]);
-  return response.documents;
+  // フロントエンドでソート（lastMessageAtが存在しない場合のフォールバック）
+  return response.documents.sort((a, b) => {
+    const aTime = a.lastMessageAt || a.createdAt || a.$createdAt;
+    const bTime = b.lastMessageAt || b.createdAt || b.$createdAt;
+    return new Date(bTime).getTime() - new Date(aTime).getTime();
+  });
 }
 
 // メッセージ送信

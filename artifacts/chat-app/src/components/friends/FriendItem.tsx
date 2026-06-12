@@ -1,19 +1,27 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useAppContext } from "@/contexts/AppContext";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { MessageSquare, Check, X } from "lucide-react";
-import { getOrCreateDirectChat, acceptFriendRequest, rejectFriendRequest } from "@/services/appwrite";
+import { getOrCreateDirectChat, acceptFriendRequest, rejectFriendRequest, findUserById } from "@/services/appwrite";
 import { useToast } from "@/hooks/use-toast";
 
 export function FriendItem({ friend, onUpdate }: { friend: any; onUpdate?: () => void }) {
   const { currentUser, setActiveChatId } = useAppContext();
   const { toast } = useToast();
   const [loading, setLoading] = useState(false);
+  const [nickname, setNickname] = useState<string | null>(null);
 
   const isSentByMe = friend.userId === currentUser?.userId;
   const targetUserId = isSentByMe ? friend.friendId : friend.userId;
-  const displayName = targetUserId;
+
+  useEffect(() => {
+    findUserById(targetUserId).then(user => {
+      if (user?.nickname) setNickname(user.nickname);
+    }).catch(() => {});
+  }, [targetUserId]);
+
+  const displayName = nickname || targetUserId;
   const fallback = displayName.substring(0, 2).toUpperCase();
 
   const handleMessage = async () => {
@@ -64,6 +72,9 @@ export function FriendItem({ friend, onUpdate }: { friend: any; onUpdate?: () =>
       
       <div className="flex-1 min-w-0 flex flex-col justify-center">
         <span className="text-sm font-medium text-sidebar-foreground truncate">{displayName}</span>
+        {nickname && (
+          <span className="text-[10px] text-sidebar-foreground/40 font-mono truncate">{targetUserId}</span>
+        )}
         <span className="text-[10px] text-sidebar-foreground/50 capitalize">
           {friend.status === "accepted" ? "承認済み" : friend.status === "pending" ? "申請中" : friend.status}
         </span>
