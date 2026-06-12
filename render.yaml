@@ -2,11 +2,11 @@
 # Free tier compatible
 
 services:
-  - type: static
+  - type: web
     name: chathub
-    runtime: node
+    runtime: static
     buildCommand: pnpm install && pnpm --filter @workspace/chat-app run build
-    publishDir: artifacts/chat-app/dist/public
+    staticPublishPath: artifacts/chat-app/dist/public
     routes:
       - type: rewrite
         source: /*
