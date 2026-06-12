@@ -118,13 +118,14 @@ export default function SetupPage() {
               <div>
                 <p className="font-medium text-foreground/80 mb-1">3. コレクションを作成（chat-db内）</p>
                 <p className="mb-1">以下のコレクションを、<strong>誰でも読み書き可能（Any）</strong>で作成。</p>
-                <ul className="list-disc list-inside ml-2 space-y-0.5 opacity-80">
-                  <li><span className="font-mono">users</span> — userId, nickname, avatarUrl, isOnline, lastSeenAt, createdAt</li>
-                  <li><span className="font-mono">friends</span> — userId, friendId, status, createdAt</li>
-                  <li><span className="font-mono">chats</span> — type, name, avatarUrl, memberIds[], lastMessage, lastMessageAt, createdBy, createdAt</li>
-                  <li><span className="font-mono">messages</span> — chatId, senderId, senderName, type, content, fileId, fileName, replyToId, reactions, editedAt, deletedAt, isPinned, readBy[], createdAt</li>
-                  <li><span className="font-mono">notifications</span> — userId, type, title, body, chatId, isRead, createdAt</li>
+                <ul className="list-disc list-inside ml-2 space-y-1 opacity-80">
+                  <li><span className="font-mono">users</span> — userId(string), nickname(string), avatarUrl(string, null), isOnline(boolean), lastSeenAt(string, null), createdAt(string)</li>
+                  <li><span className="font-mono">friends</span> — userId(string), friendId(string), status(string), createdAt(string)</li>
+                  <li><span className="font-mono">chats</span> — type(string), name(string, null), memberIds(string[], null), createdBy(string), createdAt(string)</li>
+                  <li><span className="font-mono">messages</span> — chatId(string), senderId(string), senderName(string), type(string), content(string), fileId(string, null), fileName(string, null), replyToId(string, null), isPinned(boolean), readBy(string[], null), createdAt(string)</li>
+                  <li><span className="font-mono">notifications</span> — userId(string), type(string), title(string), body(string, null), chatId(string, null), isRead(boolean), createdAt(string)</li>
                 </ul>
+                <p className="mt-2 text-yellow-400/80">⚠ null と記載されたフィールドは Appwrite で <strong>Required をオフ</strong>に設定してください。</p>
               </div>
               <div>
                 <p className="font-medium text-foreground/80 mb-1">4. ストレージバケットを作成</p>

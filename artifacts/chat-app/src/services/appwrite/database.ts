@@ -1,7 +1,6 @@
 import { databases, DATABASE_ID, COLLECTIONS } from "./client";
 import { ID, Query, AppwriteException } from "appwrite";
 
-// ユーザー登録・更新
 export async function upsertUser(userId: string, nickname: string) {
   try {
     const existing = await findUserById(userId);
@@ -32,7 +31,6 @@ export async function upsertUser(userId: string, nickname: string) {
   }
 }
 
-// ユーザー検索（IDで）
 export async function findUserById(userId: string) {
   try {
     const response = await databases.listDocuments(DATABASE_ID, COLLECTIONS.USERS, [
@@ -45,45 +43,55 @@ export async function findUserById(userId: string) {
   }
 }
 
-// チャット一覧取得（自分が所属するもの）
 export async function getChats(userId: string) {
-  const response = await databases.listDocuments(DATABASE_ID, COLLECTIONS.CHATS, [
-    Query.contains("memberIds", userId)
-  ]);
-  return response.documents.reverse();
+  try {
+    const response = await databases.listDocuments(DATABASE_ID, COLLECTIONS.CHATS, [
+      Query.contains("memberIds", userId)
+    ]);
+    return response.documents.slice().reverse();
+  } catch (err) {
+    console.error("getChats error:", err);
+    return [];
+  }
 }
 
-// メッセージ送信
-export async function sendMessage(chatId: string, senderId: string, senderName: string, content: string, type: string, replyToId?: string, fileId?: string, fileName?: string) {
+export async function sendMessage(
+  chatId: string,
+  senderId: string,
+  senderName: string,
+  content: string,
+  type: string,
+  replyToId?: string,
+  fileId?: string,
+  fileName?: string
+) {
   const now = new Date().toISOString();
-  const message = await databases.createDocument(DATABASE_ID, COLLECTIONS.MESSAGES, ID.unique(), {
+  const data: Record<string, unknown> = {
     chatId,
     senderId,
     senderName,
     type,
     content,
-    fileId: fileId || null,
-    fileName: fileName || null,
-    replyToId: replyToId || null,
     isPinned: false,
     readBy: [senderId],
     createdAt: now
-  });
+  };
+  if (fileId) data.fileId = fileId;
+  if (fileName) data.fileName = fileName;
+  if (replyToId) data.replyToId = replyToId;
 
-  return message;
+  return await databases.createDocument(DATABASE_ID, COLLECTIONS.MESSAGES, ID.unique(), data);
 }
 
-// メッセージ取得
 export async function getMessages(chatId: string, limit = 50) {
   const response = await databases.listDocuments(DATABASE_ID, COLLECTIONS.MESSAGES, [
     Query.equal("chatId", chatId),
     Query.orderDesc("createdAt"),
     Query.limit(limit)
   ]);
-  return response.documents.reverse(); // 古い順にする
+  return response.documents.reverse();
 }
 
-// 既読マーク
 export async function markAsRead(messageId: string, userId: string, currentReadBy: string[]) {
   if (currentReadBy.includes(userId)) return;
   return await databases.updateDocument(DATABASE_ID, COLLECTIONS.MESSAGES, messageId, {
@@ -91,7 +99,6 @@ export async function markAsRead(messageId: string, userId: string, currentReadB
   });
 }
 
-// 友達申請
 export async function sendFriendRequest(fromUserId: string, toUserId: string) {
   return await databases.createDocument(DATABASE_ID, COLLECTIONS.FRIENDS, ID.unique(), {
     userId: fromUserId,
@@ -101,19 +108,16 @@ export async function sendFriendRequest(fromUserId: string, toUserId: string) {
   });
 }
 
-// 友達申請を承認
 export async function acceptFriendRequest(friendDocId: string) {
   return await databases.updateDocument(DATABASE_ID, COLLECTIONS.FRIENDS, friendDocId, {
     status: "accepted"
   });
 }
 
-// 友達申請を拒否
 export async function rejectFriendRequest(friendDocId: string) {
   return await databases.deleteDocument(DATABASE_ID, COLLECTIONS.FRIENDS, friendDocId);
 }
 
-// 友達一覧取得
 export async function getFriends(userId: string) {
   const [sent, received] = await Promise.all([
     databases.listDocuments(DATABASE_ID, COLLECTIONS.FRIENDS, [Query.equal("userId", userId)]),
@@ -122,25 +126,27 @@ export async function getFriends(userId: string) {
   return [...sent.documents, ...received.documents];
 }
 
-// DMチャット作成 or 既存のDM取得
 export async function getOrCreateDirectChat(userId: string, friendId: string) {
-  const existingChats = await databases.listDocuments(DATABASE_ID, COLLECTIONS.CHATS, [
-    Query.contains("memberIds", userId)
-  ]);
+  try {
+    const existingChats = await databases.listDocuments(DATABASE_ID, COLLECTIONS.CHATS, [
+      Query.contains("memberIds", userId)
+    ]);
+    const existing = existingChats.documents.find(chat => chat.memberIds.includes(friendId));
+    if (existing) return existing;
 
-  const existing = existingChats.documents.find(chat => chat.memberIds.includes(friendId));
-  if (existing) return existing;
-
-  const now = new Date().toISOString();
-  return await databases.createDocument(DATABASE_ID, COLLECTIONS.CHATS, ID.unique(), {
-    type: "direct",
-    memberIds: [userId, friendId],
-    createdBy: userId,
-    createdAt: now
-  });
+    const now = new Date().toISOString();
+    return await databases.createDocument(DATABASE_ID, COLLECTIONS.CHATS, ID.unique(), {
+      type: "direct",
+      memberIds: [userId, friendId],
+      createdBy: userId,
+      createdAt: now
+    });
+  } catch (err) {
+    console.error("getOrCreateDirectChat error:", JSON.stringify(err));
+    throw err;
+  }
 }
 
-// グループ作成
 export async function createGroupChat(name: string, memberIds: string[], createdBy: string) {
   const now = new Date().toISOString();
   return await databases.createDocument(DATABASE_ID, COLLECTIONS.CHATS, ID.unique(), {
@@ -152,35 +158,26 @@ export async function createGroupChat(name: string, memberIds: string[], created
   });
 }
 
-// リアクション追加/削除
 export async function toggleReaction(messageId: string, emoji: string, userId: string, currentReactionsRaw: string | null) {
   const reactions = currentReactionsRaw ? JSON.parse(currentReactionsRaw) : {};
-  if (!reactions[emoji]) {
-    reactions[emoji] = [];
-  }
-  
+  if (!reactions[emoji]) reactions[emoji] = [];
   if (reactions[emoji].includes(userId)) {
     reactions[emoji] = reactions[emoji].filter((id: string) => id !== userId);
-    if (reactions[emoji].length === 0) {
-      delete reactions[emoji];
-    }
+    if (reactions[emoji].length === 0) delete reactions[emoji];
   } else {
     reactions[emoji].push(userId);
   }
-
   return await databases.updateDocument(DATABASE_ID, COLLECTIONS.MESSAGES, messageId, {
     reactions: JSON.stringify(reactions)
   });
 }
 
-// メッセージ削除（論理削除）
 export async function deleteMessage(messageId: string) {
   return await databases.updateDocument(DATABASE_ID, COLLECTIONS.MESSAGES, messageId, {
     deletedAt: new Date().toISOString()
   });
 }
 
-// メッセージ編集
 export async function editMessage(messageId: string, newContent: string) {
   return await databases.updateDocument(DATABASE_ID, COLLECTIONS.MESSAGES, messageId, {
     content: newContent,
@@ -188,14 +185,10 @@ export async function editMessage(messageId: string, newContent: string) {
   });
 }
 
-// ピン留め
 export async function pinMessage(messageId: string, isPinned: boolean) {
-  return await databases.updateDocument(DATABASE_ID, COLLECTIONS.MESSAGES, messageId, {
-    isPinned
-  });
+  return await databases.updateDocument(DATABASE_ID, COLLECTIONS.MESSAGES, messageId, { isPinned });
 }
 
-// オンライン状態更新
 export async function updatePresence(documentId: string, isOnline: boolean) {
   return await databases.updateDocument(DATABASE_ID, COLLECTIONS.USERS, documentId, {
     isOnline,

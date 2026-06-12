@@ -26,11 +26,16 @@ export function FriendItem({ friend, onUpdate }: { friend: any; onUpdate?: () =>
 
   const handleMessage = async () => {
     if (!currentUser) return;
+    setLoading(true);
     try {
       const chat = await getOrCreateDirectChat(currentUser.userId, targetUserId);
       setActiveChatId(chat.$id);
-    } catch (err) {
-      toast({ title: "チャットの開設に失敗しました", variant: "destructive" });
+    } catch (err: any) {
+      console.error("チャット開設エラー:", err);
+      const msg = err?.response ? JSON.stringify(err.response) : (err?.message || "不明なエラー");
+      toast({ title: "チャットの開設に失敗しました", description: msg, variant: "destructive" });
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -65,27 +70,27 @@ export function FriendItem({ friend, onUpdate }: { friend: any; onUpdate?: () =>
   return (
     <div className="w-full flex items-center gap-3 p-2 rounded-md transition-colors hover:bg-sidebar-accent/50 group">
       <Avatar className="w-10 h-10 border border-sidebar-border shrink-0">
-        <AvatarFallback className="bg-sidebar-border text-sidebar-foreground">
+        <AvatarFallback className="bg-sidebar-border text-sidebar-foreground text-sm">
           {fallback}
         </AvatarFallback>
       </Avatar>
-      
+
       <div className="flex-1 min-w-0 flex flex-col justify-center">
         <span className="text-sm font-medium text-sidebar-foreground truncate">{displayName}</span>
         {nickname && (
           <span className="text-[10px] text-sidebar-foreground/40 font-mono truncate">{targetUserId}</span>
         )}
-        <span className="text-[10px] text-sidebar-foreground/50 capitalize">
-          {friend.status === "accepted" ? "承認済み" : friend.status === "pending" ? "申請中" : friend.status}
+        <span className="text-[10px] text-sidebar-foreground/50">
+          {friend.status === "accepted" ? "承認済み" : friend.status === "pending" ? (isSentByMe ? "申請中" : "申請が届いています") : friend.status}
         </span>
       </div>
 
       {friend.status === "pending" && !isSentByMe && (
         <div className="flex items-center gap-1 shrink-0">
-          <Button variant="ghost" size="icon" className="w-8 h-8 text-green-400 hover:bg-green-400/20" onClick={handleAccept} disabled={loading}>
+          <Button variant="ghost" size="icon" className="w-8 h-8 text-green-400 hover:bg-green-400/20" onClick={handleAccept} disabled={loading} title="承認">
             <Check className="w-4 h-4" />
           </Button>
-          <Button variant="ghost" size="icon" className="w-8 h-8 text-red-400 hover:bg-red-400/20" onClick={handleReject} disabled={loading}>
+          <Button variant="ghost" size="icon" className="w-8 h-8 text-red-400 hover:bg-red-400/20" onClick={handleReject} disabled={loading} title="拒否">
             <X className="w-4 h-4" />
           </Button>
         </div>
@@ -93,7 +98,7 @@ export function FriendItem({ friend, onUpdate }: { friend: any; onUpdate?: () =>
 
       {friend.status === "accepted" && (
         <div className="opacity-0 group-hover:opacity-100 flex items-center gap-1 shrink-0">
-          <Button variant="ghost" size="icon" className="w-8 h-8 text-sidebar-foreground hover:bg-sidebar-accent" onClick={handleMessage}>
+          <Button variant="ghost" size="icon" className="w-8 h-8 text-sidebar-foreground hover:bg-sidebar-accent" onClick={handleMessage} disabled={loading} title="メッセージを送る">
             <MessageSquare className="w-4 h-4" />
           </Button>
         </div>
