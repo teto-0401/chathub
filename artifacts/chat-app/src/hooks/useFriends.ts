@@ -33,5 +33,5 @@ export function useFriends() {
     return () => unsubscribe();
   }, [currentUser?.userId]);
 
-  return { friends, loading, setFriends };
+  return { friends, loading, setFriends, currentUser };
 }
