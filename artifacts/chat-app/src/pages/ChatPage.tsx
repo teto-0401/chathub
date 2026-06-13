@@ -3,9 +3,11 @@ import { AppLayout } from "@/components/layout/AppLayout";
 import { Sidebar } from "@/components/layout/Sidebar";
 import { ChatArea } from "@/components/layout/ChatArea";
 import { RightPanel } from "@/components/layout/RightPanel";
+import { useBrowserNotifications } from "@/hooks/useBrowserNotifications";
 
 export default function ChatPage() {
   const { currentUser, isLoading } = useAppContext();
+  useBrowserNotifications();
 
   if (isLoading) {
     return (

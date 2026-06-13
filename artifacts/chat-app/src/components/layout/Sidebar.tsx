@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useChats } from "@/hooks/useChats";
-import { NotificationBell } from "@/components/notifications/NotificationBell";
+import { NotificationToggle } from "@/components/notifications/NotificationToggle";
 import { Settings, Users, MessageSquare } from "lucide-react";
 import { ChatList } from "@/components/chat/ChatList";
 import { FriendList } from "@/components/friends/FriendList";
@@ -22,7 +22,7 @@ export function Sidebar() {
       <div className="p-4 border-b border-sidebar-border flex items-center justify-between">
         <h1 className="font-bold text-lg text-sidebar-primary tracking-tight">ChatHub</h1>
         <div className="flex items-center gap-1">
-          <NotificationBell />
+          <NotificationToggle />
           <Button variant="ghost" size="icon" className="text-sidebar-foreground">
             <Settings className="w-5 h-5" />
           </Button>

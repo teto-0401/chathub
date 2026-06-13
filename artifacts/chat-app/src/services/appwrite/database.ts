@@ -80,28 +80,7 @@ export async function sendMessage(
   if (fileName) data.fileName = fileName;
   if (replyToId) data.replyToId = replyToId;
 
-  const message = await databases.createDocument(DATABASE_ID, COLLECTIONS.MESSAGES, ID.unique(), data);
-
-  // Create notifications for other chat members
-  try {
-    const chatDoc = await databases.getDocument(DATABASE_ID, COLLECTIONS.CHATS, chatId);
-    const memberIds: string[] = chatDoc.memberIds || [];
-    for (const memberId of memberIds) {
-      if (memberId !== senderId) {
-        await createNotification(
-          memberId,
-          "message",
-          `${senderName} からのメッセージ`,
-          type === "text" ? content : type === "image" ? "画像が送信されました" : `ファイル: ${fileName || content}`,
-          chatId
-        );
-      }
-    }
-  } catch (err) {
-    console.error("Failed to create message notifications:", err);
-  }
-
-  return message;
+  return await databases.createDocument(DATABASE_ID, COLLECTIONS.MESSAGES, ID.unique(), data);
 }
 
 export async function getMessages(chatId: string, limit = 50) {
@@ -121,51 +100,18 @@ export async function markAsRead(messageId: string, userId: string, currentReadB
 }
 
 export async function sendFriendRequest(fromUserId: string, toUserId: string) {
-  const friendDoc = await databases.createDocument(DATABASE_ID, COLLECTIONS.FRIENDS, ID.unique(), {
+  return await databases.createDocument(DATABASE_ID, COLLECTIONS.FRIENDS, ID.unique(), {
     userId: fromUserId,
     friendId: toUserId,
     status: "pending",
     createdAt: new Date().toISOString()
   });
-
-  // Notify the recipient
-  try {
-    const fromUser = await findUserById(fromUserId);
-    await createNotification(
-      toUserId,
-      "friend_request",
-      "友達申請が届きました",
-      `${fromUser?.nickname || fromUserId} が友達申請を送信しました`
-    );
-  } catch (err) {
-    console.error("Failed to create friend request notification:", err);
-  }
-
-  return friendDoc;
 }
 
 export async function acceptFriendRequest(friendDocId: string) {
-  const result = await databases.updateDocument(DATABASE_ID, COLLECTIONS.FRIENDS, friendDocId, {
+  return await databases.updateDocument(DATABASE_ID, COLLECTIONS.FRIENDS, friendDocId, {
     status: "accepted"
   });
-
-  // Notify the original sender
-  try {
-    const friendDoc = await databases.getDocument(DATABASE_ID, COLLECTIONS.FRIENDS, friendDocId);
-    const accepterId = friendDoc.friendId as string;
-    const senderId = friendDoc.userId as string;
-    const accepter = await findUserById(accepterId);
-    await createNotification(
-      senderId,
-      "friend_accepted",
-      "友達申請が承認されました",
-      `${accepter?.nickname || accepterId} が友達申請を承認しました`
-    );
-  } catch (err) {
-    console.error("Failed to create friend accepted notification:", err);
-  }
-
-  return result;
 }
 
 export async function rejectFriendRequest(friendDocId: string) {
@@ -248,63 +194,4 @@ export async function updatePresence(documentId: string, isOnline: boolean) {
     isOnline,
     lastSeenAt: new Date().toISOString()
   });
-}
-
-// ── Notifications ──
-
-export async function createNotification(
-  userId: string,
-  type: "message" | "friend_request" | "friend_accepted",
-  title: string,
-  body: string,
-  chatId?: string
-) {
-  return await databases.createDocument(DATABASE_ID, COLLECTIONS.NOTIFICATIONS, ID.unique(), {
-    userId,
-    type,
-    title,
-    body,
-    chatId: chatId || null,
-    isRead: false,
-    createdAt: new Date().toISOString()
-  });
-}
-
-export async function getNotifications(userId: string, limit = 50) {
-  try {
-    const response = await databases.listDocuments(DATABASE_ID, COLLECTIONS.NOTIFICATIONS, [
-      Query.equal("userId", userId),
-      Query.orderDesc("createdAt"),
-      Query.limit(limit)
-    ]);
-    return response.documents;
-  } catch (err) {
-    console.error("getNotifications error:", err);
-    return [];
-  }
-}
-
-export async function getUnreadNotificationCount(userId: string): Promise<number> {
-  try {
-    const response = await databases.listDocuments(DATABASE_ID, COLLECTIONS.NOTIFICATIONS, [
-      Query.equal("userId", userId),
-      Query.equal("isRead", false),
-      Query.limit(100)
-    ]);
-    return response.documents.length;
-  } catch (err) {
-    console.error("getUnreadNotificationCount error:", err);
-    return 0;
-  }
-}
-
-export async function markNotificationAsRead(notificationId: string) {
-  return await databases.updateDocument(DATABASE_ID, COLLECTIONS.NOTIFICATIONS, notificationId, {
-    isRead: true
-  });
-}
-
-export async function markAllNotificationsAsRead(userId: string, notifications: any[]) {
-  const unread = notifications.filter(n => n.userId === userId && !n.isRead);
-  await Promise.all(unread.map(n => markNotificationAsRead(n.$id)));
 }
