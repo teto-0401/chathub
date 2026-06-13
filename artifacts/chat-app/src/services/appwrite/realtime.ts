@@ -35,3 +35,14 @@ export function subscribeToFriendRequests(userId: string, callback: (event: any)
     }
   );
 }
+
+export function subscribeToNotifications(userId: string, callback: (event: any) => void): UnsubscribeFn {
+  return client.subscribe(
+    `databases.${DATABASE_ID}.collections.${COLLECTIONS.NOTIFICATIONS}.documents`,
+    (response: any) => {
+      if (response.payload?.userId === userId) {
+        callback(response);
+      }
+    }
+  );
+}
